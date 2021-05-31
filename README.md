@@ -5,12 +5,14 @@
  ██████╔╝██║░░██║██║░░░░░███████╗░░░██║░░░╚█████╔╝██║░╚██╗███████╗██║░╚███
  ╚═════╝░╚═╝░░╚═╝╚═╝░░░░░╚══════╝░░░╚═╝░░░░╚════╝░╚═╝░░╚═╝╚══════╝╚═╝░░╚══
 
-[![GitHub version](https://badge.fury.io/gh/solidity-guru%2Fsafetoken.svg)](https://badge.fury.io/gh/solidity-guru%2Fsafetoken)
+![GitHub version](https://img.shields.io/github/v/release/solidity-guru/safetoken?include_prereleases)
+![GitHub release data](https://img.shields.io/github/release-date-pre/solidity-guru/safetoken)
+![Github commits](https://img.shields.io/github/commits-since/solidity-guru/safetoken/v1.0-beta?include_prereleases)
+![GitHub stars](https://img.shields.io/github/stars/solidity-guru/safetoken)
 [![GitHub Issues](https://img.shields.io/github/issues/solidity-guru/safetoken)](https://github.com/solidity-guru/safetoken/issues)
 ![Github](https://img.shields.io/github/downloads/solidity-guru/safetoken/total?style=flat)
 [![License](https://img.shields.io/github/license/solidity-guru/safetoken?style=flat)](https://opensource.org/licenses/MIT)
-[![Discord](https://img.shields.io/discord/830637298109644820?style=flat)](https://img.shields.io/discord/830637298109644820?style=social)
-
+[![Discord](https://img.shields.io/discord/830637298109644820)
 
 # Safetoken
 

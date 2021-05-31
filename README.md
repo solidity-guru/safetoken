@@ -12,7 +12,7 @@
 [![GitHub Issues](https://img.shields.io/github/issues/solidity-guru/safetoken)](https://github.com/solidity-guru/safetoken/issues)
 ![Github](https://img.shields.io/github/downloads/solidity-guru/safetoken/total?style=flat)
 [![License](https://img.shields.io/github/license/solidity-guru/safetoken?style=flat)](https://opensource.org/licenses/MIT)
-[![Discord](https://img.shields.io/discord/830637298109644820)
+[![Discord](https://img.shields.io/discord/830637298109644820)](https://discord.gg/cUNrn8Urdw)
 
 # Safetoken
 

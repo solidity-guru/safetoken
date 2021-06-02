@@ -237,7 +237,14 @@ abstract contract Tokenomics {
     }
 }
 
-abstract contract BaseRfiToken is IERC20, IERC20Metadata, Ownable, Tokenomics {
+abstract contract Presaleable is Manageable {
+    bool internal isInPresale;
+    function setPreseableEnabled(bool value) external onlyManager {
+        isInPresale = value;
+    }
+}
+
+abstract contract BaseRfiToken is IERC20, IERC20Metadata, Ownable, Presaleable, Tokenomics {
 
     using SafeMath for uint256;
     using Address for address;
@@ -460,30 +467,33 @@ abstract contract BaseRfiToken is IERC20, IERC20Metadata, Ownable, Tokenomics {
         require(sender != address(burnAddress), "BaseRfiToken: transfer from the burn address");
         require(amount > 0, "Transfer amount must be greater than zero");
         
-        /**
-         * Check the amount is within the max allowed limit as long as a
-         * unlimited sender/recepient is not involved in the transaction
-         */
-        if ( amount > maxTransactionAmount && !_isUnlimitedSender(sender) && !_isUnlimitedRecipient(recipient) ){
-            revert("Transfer amount exceeds the maxTxAmount.");
-        }
-        /**
-         * The pair needs to excluded from the max wallet balance check; 
-         * selling tokens is sending them back to the pair (without this
-         * check, selling tokens would not work if the pair's balance 
-         * was over the allowed max)
-         *
-         * Note: This does NOT take into account the fees which will be deducted 
-         *       from the amount. As such it could be a bit confusing 
-         */
-        if ( maxWalletBalance > 0 && !_isUnlimitedSender(sender) && !_isUnlimitedRecipient(recipient) && !_isV2Pair(recipient) ){
-            uint256 recipientBalance = balanceOf(recipient);
-            require(recipientBalance + amount <= maxWalletBalance, "New balance would exceed the maxWalletBalance");
-        }
-        
         // indicates whether or not feee should be deducted from the transfer
         bool takeFee = true;
-        
+
+        if ( isInPresale ){ takeFee = false; }
+        else {
+            /**
+            * Check the amount is within the max allowed limit as long as a
+            * unlimited sender/recepient is not involved in the transaction
+            */
+            if ( amount > maxTransactionAmount && !_isUnlimitedSender(sender) && !_isUnlimitedRecipient(recipient) ){
+                revert("Transfer amount exceeds the maxTxAmount.");
+            }
+            /**
+            * The pair needs to excluded from the max wallet balance check; 
+            * selling tokens is sending them back to the pair (without this
+            * check, selling tokens would not work if the pair's balance 
+            * was over the allowed max)
+            *
+            * Note: This does NOT take into account the fees which will be deducted 
+            *       from the amount. As such it could be a bit confusing 
+            */
+            if ( maxWalletBalance > 0 && !_isUnlimitedSender(sender) && !_isUnlimitedRecipient(recipient) && !_isV2Pair(recipient) ){
+                uint256 recipientBalance = balanceOf(recipient);
+                require(recipientBalance + amount <= maxWalletBalance, "New balance would exceed the maxWalletBalance");
+            }
+        }
+
         // if any account belongs to _isExcludedFromFee account then remove the fee
         if(_isExcludedFromFee[sender] || _isExcludedFromFee[recipient]){ takeFee = false; }
 
@@ -525,7 +535,7 @@ abstract contract BaseRfiToken is IERC20, IERC20Metadata, Ownable, Tokenomics {
     }
     
     function _takeFees(uint256 amount, uint256 currentRate, uint256 sumOfFees ) private {
-        if ( sumOfFees > 0 ){
+        if ( sumOfFees > 0 && !isInPresale ){
             _takeTransactionFees(amount, currentRate);
         }
     }
@@ -859,12 +869,16 @@ abstract contract SafeToken is BaseRfiToken, Liquifier, Antiwhale {
     
     // function _beforeTokenTransfer(address sender, address recipient, uint256 amount, bool takeFee) internal override {
     function _beforeTokenTransfer(address sender, address , uint256 , bool ) internal override {
-        uint256 contractTokenBalance = balanceOf(address(this));
-        liquify( contractTokenBalance, sender );
+        if ( !isInPresale ){
+            uint256 contractTokenBalance = balanceOf(address(this));
+            liquify( contractTokenBalance, sender );
+        }
     }
 
     function _takeTransactionFees(uint256 amount, uint256 currentRate) internal override {
         
+        if( isInPresale ){ return; }
+
         uint256 feesCount = _getFeesCount();
         for (uint256 index = 0; index < feesCount; index++ ){
             (FeeType name, uint256 value, address recipient,) = _getFee(index);
